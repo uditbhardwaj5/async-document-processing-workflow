@@ -102,4 +102,3 @@ A production-style full stack application for asynchronous document processing w
 
 ## AI Usage Note
 This project was developed with AI-assisted support.
-All architecture decisions, implementation verification, and final code validation were reviewed and executed by the developer.
