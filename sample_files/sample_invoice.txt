@@ -1,0 +1,10 @@
+Invoice #INV-1024
+Customer: Acme Labs
+Date: 2026-04-08
+
+Items:
+- Analytics Subscription, Qty 1, Amount 1200 USD
+- Priority Support, Qty 1, Amount 300 USD
+
+Total Amount: 1500 USD
+Terms: Net 30

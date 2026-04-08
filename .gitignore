@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.env
+
+# Node
+node_modules/
+.next/
+out/
+
+# Local uploads and exports
+backend/uploads/
+sample_exports/generated/
+
+# IDE
+.vscode/
+.DS_Store

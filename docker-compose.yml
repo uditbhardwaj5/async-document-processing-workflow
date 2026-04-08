@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: docproc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      APP_NAME: Document Processing Workflow API
+      DEBUG: "true"
+      API_PREFIX: /api
+      CORS_ORIGINS: '["http://localhost:3000"]'
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/docproc
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      REDIS_PROGRESS_CHANNEL: job_progress
+      UPLOAD_DIR: /app/uploads
+      MAX_UPLOAD_SIZE_MB: "20"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+      - uploads_data:/app/uploads
+    depends_on:
+      - postgres
+      - redis
+
+  worker:
+    build:
+      context: ./backend
+    command: celery -A app.workers.celery_app.celery_app worker -l info
+    environment:
+      APP_NAME: Document Processing Workflow API
+      DEBUG: "true"
+      API_PREFIX: /api
+      CORS_ORIGINS: '["http://localhost:3000"]'
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/docproc
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      REDIS_PROGRESS_CHANNEL: job_progress
+      UPLOAD_DIR: /app/uploads
+      MAX_UPLOAD_SIZE_MB: "20"
+    volumes:
+      - ./backend/app:/app/app
+      - uploads_data:/app/uploads
+    depends_on:
+      - backend
+      - redis
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  uploads_data:
