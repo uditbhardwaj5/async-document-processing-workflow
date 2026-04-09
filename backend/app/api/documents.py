@@ -81,14 +81,17 @@ def stream_document_progress(document_id: str):
     subscriber = ProgressSubscriber()
 
     def event_stream() -> Generator[str, None, None]:
-        for raw in subscriber.listen():
-            try:
-                payload = json.loads(raw)
-            except json.JSONDecodeError:
-                continue
-            if payload.get("document_id") != document_id:
-                continue
-            event = ProgressEvent(**payload)
-            yield f"data: {event.model_dump_json()}\\n\\n"
+        try:
+            for raw in subscriber.listen():
+                try:
+                    payload = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+                if payload.get("document_id") != document_id:
+                    continue
+                event = ProgressEvent(**payload)
+                yield f"data: {event.model_dump_json()}\\n\\n"
+        finally:
+            subscriber.close()
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")

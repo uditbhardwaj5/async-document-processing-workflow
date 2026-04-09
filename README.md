@@ -78,6 +78,29 @@ A production-style full stack application for asynchronous document processing w
 5. Finalize completed document.
 6. Export finalized records to JSON and CSV.
 
+## Demo Video
+- 3-5 minute demo link (required): `ADD_DEMO_VIDEO_LINK_HERE`
+
+## Submission Checklist
+- [x] Frontend: Next.js + TypeScript
+- [x] Backend: FastAPI (Python)
+- [x] Database: PostgreSQL
+- [x] Async processing: Celery worker (outside request-response cycle)
+- [x] Messaging/state: Redis + Redis Pub/Sub progress events
+- [x] Upload one or more documents
+- [x] Document metadata and job details persisted in PostgreSQL
+- [x] Job states: queued, processing, completed, failed
+- [x] Live/near-real-time progress visibility (SSE + polling)
+- [x] Dashboard with search, status filter, sorting
+- [x] Detail page with review/edit
+- [x] Finalize reviewed output
+- [x] Retry failed jobs
+- [x] Export finalized data as JSON/CSV
+- [x] Sample files included
+- [x] Sample exported outputs included
+- [ ] Add final GitHub repository link
+- [ ] Replace demo video placeholder with real video URL
+
 ## Assumptions
 - Documents are stored on local filesystem (`UPLOAD_DIR`) for this assignment.
 - Text parsing is intentionally simple and mock-friendly.

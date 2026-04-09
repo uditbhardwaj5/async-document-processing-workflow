@@ -14,6 +14,7 @@ export default function DocumentDetailPage() {
 
   const [doc, setDoc] = useState<DocumentItem | null>(null);
   const [reviewText, setReviewText] = useState("{}");
+  const [isReviewDirty, setIsReviewDirty] = useState(false);
   const [events, setEvents] = useState<ProgressEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +22,9 @@ export default function DocumentDetailPage() {
     try {
       const loaded = await getDocument(id);
       setDoc(loaded);
-      setReviewText(JSON.stringify(loaded.reviewed_data ?? loaded.extracted_data ?? {}, null, 2));
+      if (!isReviewDirty) {
+        setReviewText(JSON.stringify(loaded.reviewed_data ?? loaded.extracted_data ?? {}, null, 2));
+      }
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch document");
@@ -32,7 +35,7 @@ export default function DocumentDetailPage() {
     refresh();
     const timer = setInterval(refresh, 4000);
     return () => clearInterval(timer);
-  }, [id]);
+  }, [id, isReviewDirty]);
 
   useEffect(() => {
     const source = new EventSource(getProgressStreamUrl(id));
@@ -55,6 +58,8 @@ export default function DocumentDetailPage() {
       const parsed = JSON.parse(reviewText) as Record<string, unknown>;
       const updated = await updateReview(id, parsed);
       setDoc(updated);
+      setReviewText(JSON.stringify(updated.reviewed_data ?? updated.extracted_data ?? {}, null, 2));
+      setIsReviewDirty(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save review data");
     }
@@ -111,13 +116,21 @@ export default function DocumentDetailPage() {
       <section className="grid grid-2">
         <div className="card">
           <h2>Review & Edit Output</h2>
-          <textarea rows={18} value={reviewText} onChange={(e) => setReviewText(e.target.value)} />
+            <textarea
+              rows={18}
+              value={reviewText}
+              onChange={(e) => {
+                setReviewText(e.target.value);
+                setIsReviewDirty(true);
+              }}
+            />
           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
             <button onClick={onSaveReview}>Save Review</button>
             <button className="primary" onClick={onFinalize} disabled={doc.status !== "completed" || doc.finalized}>
               Finalize
             </button>
           </div>
+            {isReviewDirty && <p style={{ color: "var(--muted)" }}>You have unsaved review changes.</p>}
           {!parsedPreview && <p style={{ color: "var(--danger)" }}>Review JSON is invalid.</p>}
         </div>
 
