@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "Document Processing Workflow API"
+    app_name: str = "async-document-processing-workflow"
     debug: bool = True
     api_prefix: str = "/api"
     cors_origins: str = "http://localhost:3000"

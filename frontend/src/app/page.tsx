@@ -70,7 +70,7 @@ export default function DashboardPage() {
   return (
     <main className="container grid" style={{ gap: 18 }}>
       <section className="card" style={{ animation: "fadein .5s ease" }}>
-        <h1>Async Document Processing Workflow</h1>
+        <h1>async-document-processing-workflow</h1>
         <p style={{ color: "var(--muted)" }}>
           Upload documents, watch background processing progress, review extracted output, finalize records, and export.
         </p>

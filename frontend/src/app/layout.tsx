@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Async Document Processing",
+  title: "async-document-processing-workflow",
   description: "Upload, process, review, finalize, and export documents",
 };
 

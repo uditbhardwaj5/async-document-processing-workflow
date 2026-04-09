@@ -1,4 +1,4 @@
-# Async Document Processing Workflow System
+# async-document-processing-workflow
 
 A production-style full stack application for asynchronous document processing with live progress tracking.
 
