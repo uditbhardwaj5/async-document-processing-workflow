@@ -2,6 +2,9 @@
 
 A production-style full stack application for asynchronous document processing with live progress tracking.
 
+## Demo Video
+- [Watch the demo](./Demo.mp4)
+
 ## Tech Stack
 - Frontend: Next.js 14 + TypeScript
 - Backend: FastAPI (Python)
