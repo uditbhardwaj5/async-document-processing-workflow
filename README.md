@@ -3,16 +3,7 @@
 A production-style full stack application for asynchronous document processing with live progress tracking.
 
 ## Demo Video
-<iframe
-   width="100%"
-   height="450"
-   src="https://www.youtube.com/embed/1i-OK2WgdTc"
-   title="Project Demo Video"
-   frameborder="0"
-   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-   referrerpolicy="strict-origin-when-cross-origin"
-   allowfullscreen
-></iframe>
+<iframe width="100%" height="450" src="https://www.youtube.com/embed/1i-OK2WgdTc" title="Project Demo Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Tech Stack
 - Frontend: Next.js 14 + TypeScript
