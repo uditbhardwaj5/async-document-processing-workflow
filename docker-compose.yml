@@ -19,7 +19,7 @@ services:
     build:
       context: ./backend
     environment:
-      APP_NAME: Document Processing Workflow API
+      APP_NAME: async-document-processing-workflow
       DEBUG: "true"
       API_PREFIX: /api
       CORS_ORIGINS: '["http://localhost:3000"]'
@@ -44,7 +44,7 @@ services:
       context: ./backend
     command: celery -A app.workers.celery_app.celery_app worker -l info
     environment:
-      APP_NAME: Document Processing Workflow API
+      APP_NAME: async-document-processing-workflow
       DEBUG: "true"
       API_PREFIX: /api
       CORS_ORIGINS: '["http://localhost:3000"]'
