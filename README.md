@@ -70,6 +70,29 @@ A production-style full stack application for asynchronous document processing w
 2. `npm install`
 3. `npm run dev`
 
+## Production Setup (Docker Compose + Caddy)
+1. Create production env file:
+   - `cp .env.prod.example .env.prod`
+2. Update required values in `.env.prod`:
+   - `DOMAIN`
+   - `POSTGRES_PASSWORD`
+   - `DATABASE_URL`
+   - `CORS_ORIGINS`
+   - `ALLOWED_HOSTS`
+3. Start production stack:
+   - `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build`
+4. Verify services:
+   - `docker compose -f docker-compose.prod.yml --env-file .env.prod ps`
+   - `curl -fsS http://localhost/health`
+
+### Production Hardening Included
+- Backend `DEBUG` defaults to `false`
+- Trusted host validation via `ALLOWED_HOSTS`
+- Optional HTTPS redirect via `ENFORCE_HTTPS`
+- Response compression via `GZIP_MINIMUM_SIZE`
+- CORS supports explicit origins and optional regex
+- Container health checks and startup ordering in compose files
+
 
 ## Workflow Demo Script
 1. Upload files from `sample_files/`.

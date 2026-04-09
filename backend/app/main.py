@@ -1,7 +1,10 @@
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.documents import router as documents_router
 from app.api.health import router as health_router
@@ -12,9 +15,17 @@ settings = get_settings()
 
 app = FastAPI(title=settings.app_name, debug=settings.debug)
 
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.allowed_hosts_list)
+
+if settings.enforce_https:
+    app.add_middleware(HTTPSRedirectMiddleware)
+
+app.add_middleware(GZipMiddleware, minimum_size=settings.gzip_minimum_size)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
+    allow_origin_regex=settings.cors_origin_regex_value,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
