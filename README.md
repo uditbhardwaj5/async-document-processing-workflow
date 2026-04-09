@@ -3,10 +3,16 @@
 A production-style full stack application for asynchronous document processing with live progress tracking.
 
 ## Demo Video
-<video controls width="100%" preload="metadata" playsinline>
-   <source src="https://raw.githubusercontent.com/uditbhardwaj5/async-document-processing-workflow/main/Demo.mp4" type="video/mp4" />
-   Your Markdown renderer does not support embedded video playback.
-</video>
+<iframe
+   width="100%"
+   height="450"
+   src="https://www.youtube.com/embed/1i-OK2WgdTc"
+   title="Project Demo Video"
+   frameborder="0"
+   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+   referrerpolicy="strict-origin-when-cross-origin"
+   allowfullscreen
+></iframe>
 
 ## Tech Stack
 - Frontend: Next.js 14 + TypeScript
