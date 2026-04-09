@@ -3,11 +3,10 @@
 A production-style full stack application for asynchronous document processing with live progress tracking.
 
 ## Demo Video
-<video src="./Demo.mp4" controls width="100%">
-   Your browser does not support the video tag.
+<video controls width="100%" preload="metadata" playsinline>
+   <source src="./Demo.mp4" type="video/mp4" />
+   Your Markdown renderer does not support embedded video playback.
 </video>
-
-[Download the demo video](./Demo.mp4)
 
 ## Tech Stack
 - Frontend: Next.js 14 + TypeScript
