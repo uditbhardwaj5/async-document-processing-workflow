@@ -43,10 +43,11 @@ def process_document_task(document_id: str):
         db.commit()
         sleep(1)
 
-        file_text = ""
-        file_path = Path(doc.file_path)
-        if file_path.exists():
-            file_text = file_path.read_text(encoding="utf-8", errors="ignore")[:2500]
+        file_text = doc.source_text or ""
+        if not file_text:
+            file_path = Path(doc.file_path)
+            if file_path.exists():
+                file_text = file_path.read_text(encoding="utf-8", errors="ignore")[:2500]
 
         _publish(document_id, "document_parsing_completed", 45, DocumentStatus.PROCESSING.value)
         doc.progress = 45

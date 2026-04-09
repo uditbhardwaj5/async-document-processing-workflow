@@ -25,6 +25,7 @@ class Document(Base):
     content_type: Mapped[str] = mapped_column(String(128), nullable=False)
     size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
     file_path: Mapped[str] = mapped_column(Text, nullable=False)
+    source_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     status: Mapped[DocumentStatus] = mapped_column(
         Enum(DocumentStatus, name="document_status"),

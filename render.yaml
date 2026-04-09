@@ -1,0 +1,102 @@
+services:
+  - type: web
+    name: docproc-backend
+    env: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: APP_NAME
+        value: async-document-processing-workflow
+      - key: DEBUG
+        value: "false"
+      - key: API_PREFIX
+        value: /api
+      - key: CORS_ORIGINS
+        value: https://docproc-frontend.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: docproc-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: docproc-redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: docproc-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: redis
+          name: docproc-redis
+          property: connectionString
+      - key: REDIS_PROGRESS_CHANNEL
+        value: job_progress
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+      - key: MAX_UPLOAD_SIZE_MB
+        value: "20"
+
+  - type: worker
+    name: docproc-worker
+    env: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerCommand: celery -A app.workers.celery_app.celery_app worker -l info
+    autoDeploy: true
+    envVars:
+      - key: APP_NAME
+        value: async-document-processing-workflow
+      - key: DEBUG
+        value: "false"
+      - key: API_PREFIX
+        value: /api
+      - key: CORS_ORIGINS
+        value: https://docproc-frontend.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: docproc-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: docproc-redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: docproc-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: redis
+          name: docproc-redis
+          property: connectionString
+      - key: REDIS_PROGRESS_CHANNEL
+        value: job_progress
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+      - key: MAX_UPLOAD_SIZE_MB
+        value: "20"
+
+  - type: web
+    name: docproc-frontend
+    env: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: https://docproc-backend.onrender.com/api
+
+  - type: redis
+    name: docproc-redis
+    ipAllowList: []
+    plan: free
+
+databases:
+  - name: docproc-db
+    plan: free

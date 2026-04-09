@@ -40,6 +40,7 @@ def create_document_from_upload(db: Session, upload: UploadFile) -> Document:
         )
 
     original_name = upload.filename or "document"
+    source_text = data.decode("utf-8", errors="ignore")[:2500] if data else ""
     filename = f"{uuid.uuid4()}_{_safe_filename(original_name)}"
     file_path = _upload_root() / filename
     with open(file_path, "wb") as f:
@@ -50,6 +51,7 @@ def create_document_from_upload(db: Session, upload: UploadFile) -> Document:
         content_type=upload.content_type or "application/octet-stream",
         size_bytes=len(data),
         file_path=str(file_path),
+        source_text=source_text,
         status=DocumentStatus.QUEUED,
         progress=0,
     )
