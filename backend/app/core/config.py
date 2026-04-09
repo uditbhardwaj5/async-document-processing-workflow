@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     celery_broker_url: str = "redis://localhost:6379/1"
     celery_result_backend: str = "redis://localhost:6379/2"
     redis_progress_channel: str = "job_progress"
+    redis_ssl_cert_reqs: str = "required"
+    celery_broker_connection_retry_on_startup: bool = True
 
     upload_dir: str = "./uploads"
     max_upload_size_mb: int = 20

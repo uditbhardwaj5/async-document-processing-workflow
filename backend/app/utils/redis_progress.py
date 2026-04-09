@@ -1,4 +1,5 @@
 import json
+import ssl
 from datetime import datetime, timezone
 
 import redis
@@ -8,9 +9,25 @@ from app.core.config import get_settings
 settings = get_settings()
 
 
+def _redis_client_kwargs(url: str) -> dict:
+    if not url.startswith("rediss://"):
+        return {}
+    req = (settings.redis_ssl_cert_reqs or "required").strip().lower()
+    mapping = {
+        "required": ssl.CERT_REQUIRED,
+        "optional": ssl.CERT_OPTIONAL,
+        "none": ssl.CERT_NONE,
+    }
+    return {"ssl_cert_reqs": mapping.get(req, ssl.CERT_REQUIRED)}
+
+
 class ProgressPublisher:
     def __init__(self) -> None:
-        self.client = redis.Redis.from_url(settings.redis_url, decode_responses=True)
+        self.client = redis.Redis.from_url(
+            settings.redis_url,
+            decode_responses=True,
+            **_redis_client_kwargs(settings.redis_url),
+        )
 
     def publish(self, payload: dict) -> None:
         payload["timestamp"] = datetime.now(timezone.utc).isoformat()
@@ -19,7 +36,11 @@ class ProgressPublisher:
 
 class ProgressSubscriber:
     def __init__(self) -> None:
-        self.client = redis.Redis.from_url(settings.redis_url, decode_responses=True)
+        self.client = redis.Redis.from_url(
+            settings.redis_url,
+            decode_responses=True,
+            **_redis_client_kwargs(settings.redis_url),
+        )
         self.pubsub: redis.client.PubSub | None = None
 
     def listen(self):
