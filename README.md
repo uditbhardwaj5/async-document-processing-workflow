@@ -4,7 +4,7 @@ A production-style full stack application for asynchronous document processing w
 
 ## Demo Video
 <video controls width="100%" preload="metadata" playsinline>
-   <source src="./Demo.mp4" type="video/mp4" />
+   <source src="https://raw.githubusercontent.com/uditbhardwaj5/async-document-processing-workflow/main/Demo.mp4" type="video/mp4" />
    Your Markdown renderer does not support embedded video playback.
 </video>
 
