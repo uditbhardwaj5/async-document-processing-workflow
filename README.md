@@ -2,6 +2,9 @@
 
 A production-style full stack application for asynchronous document processing with live progress tracking.
 
+## GitHub Repository
+[View Repository](https://github.com/yourusername/async-document-processing-workflow)
+
 ## Demo Video
 [Watch Demo Video](https://youtu.be/1i-OK2WgdTc)
 
@@ -106,21 +109,47 @@ A production-style full stack application for asynchronous document processing w
 6. Export finalized records to JSON and CSV.
 
 
+## Architecture Overview
+
+```
+User Browser (Next.js)
+    ↓
+Frontend Dashboard → SSE Stream ↔ FastAPI Backend
+    ↓                                  ↓
+Upload Form                    Document Service
+    ↓                                  ↓
+PostgreSQL ← File Upload    Celery Worker (Background)
+    ↑                                  ↓
+    ← Redis Pub/Sub (Progress Events) ←
+```
+
+**Key Components:**
+- **Frontend (Next.js)**: Upload, dashboard with search/filter/sort, detail page with live updates
+- **Backend (FastAPI)**: REST API, document management, Celery task orchestration
+- **Database (PostgreSQL)**: Document metadata, status, extracted/reviewed data
+- **Workers (Celery)**: Asynchronous processing with multi-stage events
+- **Messaging (Redis)**: Pub/Sub for progress events, Celery broker/result backend
+
 ## Assumptions
 - Documents are stored on local filesystem (`UPLOAD_DIR`) for this assignment.
-- Text parsing is intentionally simple and mock-friendly.
+- Text parsing is intentionally simple and mock-friendly (extracts keywords, summary, metadata).
 - Authentication is not enabled in this baseline implementation.
+- SSE is sufficient for progress tracking; WebSocket not required.
+- Maximum upload file size: 20MB (configurable).
 
 ## Trade-offs
 - SQLAlchemy tables are auto-created on startup (no Alembic migrations in this version).
-- Dashboard uses near-real-time polling for list freshness while detail page uses SSE for live event stream.
-- Parsing logic is lightweight and deterministic to focus on async architecture.
+- Dashboard uses near-real-time polling (4s interval) for list freshness while detail page uses SSE for live event stream.
+- Parsing logic is lightweight and deterministic to focus on async architecture rather than NLP quality.
+- File storage on local filesystem instead of cloud object storage (S3/GCS) for local development simplicity.
 
 ## Limitations
-- No authentication/authorization.
+- No authentication/authorization (beyond CORS).
 - No object storage abstraction (S3/GCS) yet.
-- No cancellation endpoint.
+- No task cancellation endpoint.
 - No full automated test suite in this submission baseline.
+- No database migrations framework (Alembic); schema created on app startup.
+- No task priority queue; all tasks processed FIFO.
 
 ## Bonus Features Included
 - Docker Compose multi-service setup
@@ -128,5 +157,28 @@ A production-style full stack application for asynchronous document processing w
 - Structured export (JSON and CSV)
 
 
-## AI Usage Note
-This project was developed with AI-assisted support.
+## Development Notes
+
+### AI Tool Usage
+This project was developed with AI-assisted code generation and architecture guidance.
+
+### Testing the Application
+1. **Quick Test**: Upload `sample_files/sample_invoice.txt` or `sample_report.txt`
+2. **Monitor**: Watch status transitions on dashboard (Queued → Processing → Completed)
+3. **Detail View**: Click document to see live progress events via SSE
+4. **Review**: Edit extracted data in JSON editor
+5. **Finalize**: Mark document as complete
+6. **Export**: Download all finalized records as JSON or CSV
+
+### Performance Considerations
+- Single document processing: ~5-10 seconds
+- Celery worker auto-scales based on load
+- Redis pub/sub latency: <100ms typical
+- Dashboard list refresh: 4-second poll interval (configurable)
+- SSE connection: persistent, low overhead
+
+### Troubleshooting
+- **Connection refused**: Ensure PostgreSQL, Redis, and Celery worker are running
+- **Files not processing**: Check Celery worker logs and Redis connection
+- **No progress events**: Verify Redis Pub/Sub channel and EventSource connection in browser console
+- **Upload errors**: Check `UPLOAD_DIR` permissions and `MAX_UPLOAD_SIZE_MB` setting
