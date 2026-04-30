@@ -1,6 +1,5 @@
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy.pool import NullPool
 
 from app.core.config import get_settings
 
@@ -17,12 +16,21 @@ def _normalize_database_url(raw_url: str) -> str:
     return raw_url
 
 
-# Use NullPool for better compatibility with Railway and cloud deployments
+# Use QueuePool with modest settings for cloud deployments
+# NullPool causes issues with Uvicorn, so use QueuePool instead
 engine = create_engine(
     _normalize_database_url(settings.database_url),
     pool_pre_ping=True,
-    poolclass=NullPool,
-    connect_args={"connect_timeout": 10}
+    pool_size=5,
+    max_overflow=10,
+    pool_recycle=3600,
+    connect_args={
+        "connect_timeout": 10,
+        "keepalives": 1,
+        "keepalives_idle": 30,
+        "keepalives_interval": 10,
+        "keepalives_count": 5,
+    }
 )
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
