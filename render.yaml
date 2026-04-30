@@ -53,7 +53,7 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./backend/Dockerfile
-    dockerCommand: celery -A app.workers.celery_app.celery_app worker -l info
+    dockerCommand: celery -A app.workers.celery_app.celery_app worker -l info --concurrency=2 --max-tasks-per-child=100
     autoDeploy: true
     envVars:
       - key: APP_NAME
