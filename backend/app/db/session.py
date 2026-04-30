@@ -1,5 +1,6 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import NullPool
 
 from app.core.config import get_settings
 
@@ -16,7 +17,13 @@ def _normalize_database_url(raw_url: str) -> str:
     return raw_url
 
 
-engine = create_engine(_normalize_database_url(settings.database_url), pool_pre_ping=True)
+# Use NullPool for better compatibility with Railway and cloud deployments
+engine = create_engine(
+    _normalize_database_url(settings.database_url),
+    pool_pre_ping=True,
+    poolclass=NullPool,
+    connect_args={"connect_timeout": 10}
+)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
 

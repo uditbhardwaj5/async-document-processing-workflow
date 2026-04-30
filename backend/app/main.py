@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
@@ -10,6 +11,9 @@ from app.api.documents import router as documents_router
 from app.api.health import router as health_router
 from app.core.config import get_settings
 from app.db.session import Base, engine
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
@@ -34,8 +38,24 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup():
-    Base.metadata.create_all(bind=engine)
-    Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)
+    logger.info(f"Starting {settings.app_name} (debug={settings.debug})")
+    logger.info(f"Database: {settings.database_url[:50]}...")
+    logger.info(f"Redis: {settings.redis_url[:50]}...")
+    
+    try:
+        logger.info("Initializing database tables...")
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables initialized successfully")
+    except Exception as e:
+        logger.warning(f"Failed to initialize database tables on startup: {e}")
+        logger.warning("Tables will be created on first request if database becomes available.")
+    
+    try:
+        logger.info(f"Creating upload directory: {settings.upload_dir}")
+        Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)
+        logger.info("Upload directory ready")
+    except Exception as e:
+        logger.warning(f"Failed to create upload directory: {e}")
 
 
 app.include_router(health_router)
